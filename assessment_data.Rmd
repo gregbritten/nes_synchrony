@@ -1,0 +1,55 @@
+---
+title: "Assessment data"
+author:
+  - Gregory Britten
+output:
+  pdf_document: default
+  date: "`r Sys.Date()`"
+---
+
+```{r}
+library(here)
+library(tidyverse)
+```
+
+Load RAM legacy stock assessment database
+```{r}
+load('data/RAMLDB v4.495/R Data/DBdata[asmt][v4.495].RData')
+ls()
+```
+
+```{r}
+cols <- c(1,3,4,7)
+head(stock[,cols])
+```
+
+```{r}
+stock[stock$region%in%c('US East Coast'),cols]
+```
+
+```{r}
+usecid  <- stock$stockid[stock$region%in%c('US East Coast')]
+dat     <- filter(timeseries_values_views,stockid%in%usecid)
+```
+
+```{r}
+for(i in 1:length(usecid)){
+  dtmp <- dat[dat$stockid==usecid[i] & dat$year %in% 1950:2022,]
+  if(sum(!is.na(dtmp$R))>1 & sum(!is.na(dtmp$TBbest))>1){# & sum(!is.na(dtmp$ERbest))>1){
+    plot(-999,xlim=c(1950,2022),ylim=c(0,1))
+    lines(dtmp$year,dtmp$R/max(dtmp$R,na.rm=TRUE),col='blue')
+    lines(dtmp$year,dtmp$TBbest/max(dtmp$TBbest,na.rm=TRUE),col='black')
+    lines(dtmp$year,dtmp$ERbest/max(dtmp$ERbest,na.rm=TRUE),col='red')
+    mtext(dtmp$stocklong[1])
+  }
+}
+```
+
+
+
+
+
+
+
+
+
